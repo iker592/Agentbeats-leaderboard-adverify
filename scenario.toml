@@ -9,3 +9,4 @@ env = { ANTHROPIC_API_KEY = "${ANTHROPIC_API_KEY}" }
 
 [config]
 num_campaigns = 20
+# Re-run with API key configured

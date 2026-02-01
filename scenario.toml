@@ -1,16 +1,12 @@
 [green_agent]
-agentbeats_id = ""
-env = { API_KEY = "${GITHUB_SECRET_NAME}", LOG_LEVEL = "INFO" }
+agentbeats_id = "019c1658-576b-7a23-8ce1-a0b4aee1c6ad"
+env = { ANTHROPIC_API_KEY = "${ANTHROPIC_API_KEY}" }
 
 [[participants]]
-agentbeats_id = ""
-name = "role_1_name"
-env = {}
-
-[[participants]]
-agentbeats_id = ""
-name = "role_2_name"
-env = {}
+agentbeats_id = "019c165a-75f6-7e02-8428-ccaf6c899020"
+name = "anomaly_detector"
+env = { ANTHROPIC_API_KEY = "${ANTHROPIC_API_KEY}" }
 
 [config]
-# Add your assessment config here
+num_campaigns = 20
+# Re-run with API key configured

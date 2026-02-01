@@ -16,6 +16,7 @@ jobs:
     permissions:
       contents: write
       packages: read
+      pull-requests: write
 
     steps:
       - name: Checkout
@@ -119,7 +120,26 @@ jobs:
           git push origin ${{ steps.metadata.outputs.branch_name }}
           echo "::notice title=Submission Branch Created::Your results are ready for submission on branch: ${{ steps.metadata.outputs.branch_name }}"
 
-      - name: Output PR link
+      - name: Create and merge PR (owner-triggered)
+        if: github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Create PR
+          PR_URL=$(gh pr create \
+            --title "Submission: ${{ steps.metadata.outputs.unique_name }}" \
+            --body "Automated submission from workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --base main \
+            --head ${{ steps.metadata.outputs.branch_name }})
+          echo "Created PR: $PR_URL"
+
+          # Auto-merge
+          gh pr merge $PR_URL --squash --delete-branch
+          echo "### Results merged automatically! ✅" >> $GITHUB_STEP_SUMMARY
+          echo "PR: $PR_URL" >> $GITHUB_STEP_SUMMARY
+
+      - name: Output PR link (external submissions)
+        if: github.event_name != 'repository_dispatch' && github.event_name != 'workflow_dispatch'
         run: |
           echo "### Submit your results" >> $GITHUB_STEP_SUMMARY
           echo "[Click here to open a pull request](https://github.com/${{ steps.target.outputs.repo }}/compare/main...${{ github.repository_owner }}:${{ github.event.repository.name }}:${{ steps.metadata.outputs.branch_name }}?expand=1)" >> $GITHUB_STEP_SUMMARY
